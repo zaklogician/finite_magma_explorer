@@ -14,14 +14,6 @@
     
     <script>
 
-      async function loadVersionFromFile(file) {
-        const response = await fetch(file);
-        const jsonData = await response.json();
-        console.log(jsonData);
-        version = jsonData.version;
-        return version;
-      }
-
       // start the app
       var app = Elm.Main.init({
         flags: "e864ee",

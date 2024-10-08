@@ -175,3 +175,15 @@ pre {
   margin: 0;
   font-family: monospace;
 }
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .panel {
+    max-width: 95%;
+    min-width: 95%;
+    width: 95%;
+  }
+}

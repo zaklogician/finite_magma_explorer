@@ -245,7 +245,7 @@ viewModelInfo table matcher mi =
       String.replace "+" "◇"
     matching xs =
       if tmatcher == ""
-        then mi.satisfied
+        then xs
         else List.filter (matchInput tmatcher) xs
   in
     div []
