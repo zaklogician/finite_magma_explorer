@@ -99,7 +99,6 @@ async function loadRelationsFromFile(file) {
   const jsonData = await response.json();
   var num = 0;
   equations = jsonData.map(item => {
-    console.log([num, item]);
     num = num + 1;
     const eqnString = item.eqn;
     const lhsProgram = new Program(item.lhs);
