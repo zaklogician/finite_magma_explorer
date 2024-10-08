@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir -p dist
-elm make src/Main.elm --debug --output=dist/elm.js
+elm make src/Main.elm --optimize --output=dist/elm.js
 cp src/index.html dist/
 cp -r assets dist/
 cp src/*.json dist

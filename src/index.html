@@ -22,14 +22,9 @@
         return version;
       }
 
-      let version = "unknown";
-      loadVersionFromFile("version.json").then( v => {
-        version = v;
-      });
-
       // start the app
       var app = Elm.Main.init({
-        flags: version,
+        flags: "e864ee",
         node: document.getElementById("elm-app-here")
       });
 
