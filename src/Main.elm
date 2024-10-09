@@ -279,7 +279,7 @@ view model =
       , viewRightPanel model
       ]
     , div [class "copyright"]
-      [text ("© 2024 The Equational Theories Project / data: " ++ model.version)]
+      [text ("© 2024 The Equational Theories Project / data: " ++ take 6 model.version)]
     ]
 
 
