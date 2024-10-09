@@ -92,7 +92,7 @@ class Relation {
   }
 }
 
-// INITIALIZATION CODE //
+// HELPER FUNCTIONS FOR INITIALIZATION //
 
 async function loadRelationsFromFile(file) {
   const response = await fetch(file);
@@ -119,7 +119,8 @@ async function loadUnknownsFromFile(file) {
 }
 
 
-// AWAIT MESSAGES //
+// MAIN MESSAGE LOOP //
+
 let equations = null;
 let unknowns = null;
 self.onmessage = function(event) {
@@ -129,7 +130,7 @@ self.onmessage = function(event) {
     equations = loadRelationsFromFile('eqdb.json');
     unknowns = loadUnknownsFromFile("unknowns.json");
   }
-  if (data.type === 'compute') {
+  if (data.type === 'checkMagma') {
     const op = data.op;
     let satisfied = [];
     let refuted = [];

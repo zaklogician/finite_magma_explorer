@@ -23,7 +23,7 @@
       worker.postMessage({ type: 'init' });
 
       app.ports.checkMagma.subscribe(function (op) {
-        worker.postMessage({ type: 'compute', op });
+        worker.postMessage({ type: 'checkMagma', op });
         worker.onmessage = function (event) {
           const { satisfied, refuted, novel } = event.data;
           app.ports.checkMagmaListener.send({

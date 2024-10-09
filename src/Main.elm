@@ -12,6 +12,9 @@ import Set
 
 import Parsing exposing (parseInput)
 
+
+{- MODEL -}
+
 type alias ModelInfoSuccess =
   { satisfied : List (Int, String)
   , refuted : List (Int, String)
@@ -24,14 +27,10 @@ type ModelInfo
   | ModelInfoError String
   | ModelInfo ModelInfoSuccess
 
-port checkMagma : List (List Int) -> Cmd msg
-port openInNewTab : String -> Cmd msg
-port checkMagmaListener : (ModelInfoSuccess -> msg) -> Sub msg
-
 type alias Model =
   { key : Browser.Navigation.Key
   , currentUrl : Url
-  , input : String
+  , optable : String
   , matcherInput : String
   , modelInfo : ModelInfo
   , version : String
@@ -40,31 +39,19 @@ type alias Model =
 type Msg
   = UrlChanged Url
   | UrlRequested Browser.UrlRequest
-  | InputChanged String
-  | MatcherChanged String
   | SetUrl
+  | OptableChanged String
+  | MatcherChanged String
   | ClickProcessBtn
   | ExploreEquation Int
   | ListenMagma ModelInfo
 
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    checkMagmaListener (\x -> x |> ModelInfo |> ListenMagma)
 
-init : String -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-init version url key =
-  let
-    maybeMagma = parseQuery url
-    magma = Maybe.withDefault "" maybeMagma
-  in
-    ( { key = key
-      , currentUrl = url
-      , input = magma
-      , matcherInput = ""
-      , modelInfo = ModelInfoNone
-      , version = version}
-    , Cmd.none
-    )
+{- UPDATE -}
+
+port checkMagma : List (List Int) -> Cmd msg
+port openInNewTab : String -> Cmd msg
+port checkMagmaListener : (ModelInfoSuccess -> msg) -> Sub msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -74,7 +61,7 @@ update msg model =
         maybeMagma = parseQuery url
         magma = Maybe.withDefault "" maybeMagma
       in
-        ({ model | input = magma, currentUrl = url }, Cmd.none)
+        ({ model | optable = magma, currentUrl = url }, Cmd.none)
 
     UrlRequested urlRequest ->
       case urlRequest of
@@ -83,22 +70,22 @@ update msg model =
         Browser.External href ->
           (model, Browser.Navigation.load href)
 
-    InputChanged newInput ->
-      ({model | input = newInput}, Cmd.none)
+    OptableChanged newInput ->
+      ({model | optable = newInput}, Cmd.none)
 
     MatcherChanged newInput ->
       ({model | matcherInput = newInput}, Cmd.none)
 
     SetUrl ->
       let
-        encodedInput = percentEncode model.input
+        encodedInput = percentEncode model.optable
         currentPath = model.currentUrl.path
         newUrl = currentPath ++ "?magma=" ++ encodedInput
       in
         (model, Browser.Navigation.pushUrl model.key newUrl)
 
     ClickProcessBtn ->
-      case parseInput model.input of
+      case parseInput model.optable of
         Err err ->
           let
             newModel =
@@ -127,6 +114,8 @@ update msg model =
       in
         update SetUrl newModel
 
+{- VIEWS -}
+
 viewLeftPanel : Model -> Html Msg
 viewLeftPanel model =
   div [class "panel left-panel"]
@@ -135,9 +124,9 @@ viewLeftPanel model =
        [ id "textbox"
        , class "textarea"
        , rows 14
-       , onInput InputChanged
+       , onInput OptableChanged
        , placeholder ""
-       ] [text model.input]
+       ] [text model.optable]
    , button [id "process-button", onClick ClickProcessBtn] [ text "Process" ]
    ]
 
@@ -275,10 +264,10 @@ viewRightPanel model =
     ModelInfoError err ->
       div [class "panel right-panel"]
         [ h3 [] [text "Error"]
-        , p [] [text "I have encountered an error while parsing your input. ", text err]
+        , p [] [text "I have encountered an error while parsing your operator table. ", text err]
         ]
     ModelInfo mi ->
-      div [class "panel right-panel"] [viewModelInfo model.input model.matcherInput mi]
+      div [class "panel right-panel"] [viewModelInfo model.optable model.matcherInput mi]
 
 
 view : Model -> Browser.Document Msg
@@ -293,6 +282,8 @@ view model =
       [text ("© 2024 The Equational Theories Project / data: " ++ model.version)]
     ]
 
+
+{- MAIN APPLICATION -}
 
 parseQuery : Url -> Maybe String
 parseQuery url =
@@ -310,6 +301,24 @@ parseQuery url =
     Nothing ->
       Nothing
 
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    checkMagmaListener (\x -> x |> ModelInfo |> ListenMagma)
+
+init : String -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init version url key =
+  let
+    maybeMagma = parseQuery url
+    magma = Maybe.withDefault "" maybeMagma
+  in
+    ( { key = key
+      , currentUrl = url
+      , optable = magma
+      , matcherInput = ""
+      , modelInfo = ModelInfoNone
+      , version = version}
+    , Cmd.none
+    )
 
 main =
   Browser.application
