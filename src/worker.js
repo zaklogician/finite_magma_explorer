@@ -110,7 +110,11 @@ async function loadRelationsFromFile(file) {
 async function loadUnknownsFromFile(file) {
   const response = await fetch(file);
   const jsonData = await response.json();
-  unknowns = jsonData;
+  unknowns = jsonData.map(item => {
+    const lhsNum = parseInt(item.lhs.replace(/\D/g, ''));
+    const rhsNum = parseInt(item.rhs.replace(/\D/g, ''));
+    return {"lhs": lhsNum, "rhs": rhsNum}
+  });
   return unknowns;
 }
 
@@ -142,9 +146,9 @@ self.onmessage = function(event) {
 
     unknowns.forEach(u => {
       const antecedent = satisfied.some(x => x[0] === u.lhs);
-      const consequent = !satisfied.some(x => x[1] === u.rhs);
+      const consequent = !(satisfied.some(x => x[0] === u.rhs));
       if (antecedent && consequent) {
-        novel.push([[u.lhs, u.rhs]]);
+        novel.push([u.lhs, u.rhs]);
       }
     });
 

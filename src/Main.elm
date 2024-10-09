@@ -228,12 +228,13 @@ viewExportNovel table satisfies novel =
             in
               div []
                 [ h3 [] [text "Export"]
+                , text "Congratulations! "
                 , text ("This magma refutes " ++ count ++ " previously unknown potential implications!")
-                , text " Create a PR. Add the following code to plan.txt in All4x4Tables/data:"
+                , text " Create a PR. Add the following code to plan.txt in `All4x4Tables/data`:"
                 , div [class "code-container"] [pre [] [text (magmaLine ++ sat ++ ref)]]
-                , text "Then add the following into extra.txt in All4x4Tables/data:"
+                , text "Then add the following to extra.txt in `All4x4Tables/data`:"
                 , div [class "code-container"] [pre [] [text (tableLine ++ prov)]]
-                , text "Finally, re-run generate-lean.py!"
+                , text "Finally, re-run `python3 generate-lean.py`!"
                 ]
 
 viewModelInfo : String -> String -> ModelInfoSuccess -> Html Msg
